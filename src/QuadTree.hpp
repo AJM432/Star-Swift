@@ -23,15 +23,19 @@ private:
   double y1;
   Point first_point;
 
+  double SCREEN_WIDTH;
+  double SCREEN_HEIGHT;
+
   Point *star;
 
+  QuadTree* upper;
   QuadTree* top_left;
   QuadTree* top_right;
   QuadTree* bottom_left;
   QuadTree* bottom_right;
 
 public:
-  QuadTree(double x0, double y0, double x1, double y1);
+  QuadTree(double x0, double y0, double x1, double y1, QuadTree *upper);
   ~QuadTree();
   bool insert(Point *p);
   void update_star_color(Point *p);

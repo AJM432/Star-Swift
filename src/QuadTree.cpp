@@ -1,6 +1,7 @@
 #include "QuadTree.hpp"
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 double distance(double x0, double y0, double x1, double y1) {
   return sqrt(pow(x1-x0, 2) + pow(y1-y0, 2));
@@ -8,18 +9,31 @@ double distance(double x0, double y0, double x1, double y1) {
 
 
 
-QuadTree::QuadTree(double x0, double y0, double x1, double y1) {
+QuadTree::QuadTree(double x0, double y0, double x1, double y1, QuadTree *upper) {
   this->x0 = x0;
   this->x1 = x1;
   this->y0 = y0;
   this->y1 = y1;
 
-  max_size = 1;
-  softening_factor = 1e3;
-  theta_threshold = 0.5;
-  point_mass = 500;
-  max_speed = 500.0;
+  this->upper = upper;
+  if (this->upper == nullptr) {
+    this->SCREEN_WIDTH = x1;
+    this->SCREEN_HEIGHT = y1;
+  }
+  else {
+    this->SCREEN_WIDTH = this->upper->SCREEN_WIDTH;
+    this->SCREEN_HEIGHT = this->upper->SCREEN_HEIGHT;
+  }
 
+  // tunable
+  // ========
+  softening_factor = 1e2;
+  theta_threshold = 0.5;
+  point_mass = 100;
+  max_speed = 10000.0;
+  // ========
+
+  max_size = 1;
   center_of_mass_x = 0;
   center_of_mass_y = 0;
   total_mass = 0;
@@ -55,8 +69,8 @@ void QuadTree::update_star_color(Point *p) {
       p->r = v;
       p->g = 1.f - v;
   }
-  p->r = p->r*255;
-  // p->r = 255;
+  // p->r = p->r*255;
+  p->r = 255;
   p->g = p->g*255;
   // p->g = 255;
   p->b = 255;
@@ -92,10 +106,10 @@ void QuadTree::calculate_motion(Point *p, double other_x, double other_y, double
     p->x += p->vx*dt + (1.0/2.0)*p->ax*dt*dt;
     p->y += p->vy*dt + (1.0/2.0)*p->ay*dt*dt;
 
-    if (p->x < 10 || p->x > 590) {
+    if (p->x < 10 || p->x > (SCREEN_WIDTH - 10)) {
       p->vx = -p->vx;
     }
-    if (p->y < 10 || p->y > 590) {
+    if (p->y < 10 || p->y > (SCREEN_HEIGHT - 10)) {
         p->vy = -p->vy;
     }
     update_star_color(p);
@@ -112,7 +126,7 @@ void QuadTree::update_point_gravity(Point *p, double dt) {
   if (d<=0 || std::isnan(d)) {
     return;
   }
-  if ((s/d > theta_threshold)) {
+  if (((double)s/d > theta_threshold)) {
     calculate_motion(p, center_of_mass_x, center_of_mass_y, point_mass*num_stars, dt);
   }
   else if (split){
@@ -192,10 +206,10 @@ bool QuadTree::insert(Point *p) {
     }
     else {
       //split
-      top_left = new QuadTree(x0, y0, x_mid, y_mid);
-      top_right = new QuadTree(x_mid, y0, x1, y_mid);
-      bottom_left = new QuadTree(x0, y_mid, x_mid, y1);
-      bottom_right = new QuadTree(x_mid, y_mid, x1, y1);
+      top_left = new QuadTree(x0, y0, x_mid, y_mid, this);
+      top_right = new QuadTree(x_mid, y0, x1, y_mid, this);
+      bottom_left = new QuadTree(x0, y_mid, x_mid, y1, this);
+      bottom_right = new QuadTree(x_mid, y_mid, x1, y1, this);
 
       // copies existing points to child quadrants
       split = true;
