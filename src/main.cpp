@@ -10,8 +10,8 @@
 
 #include "QuadTree.hpp"
 
-const int NUM_STARS = 5000;
-const int RADIUS = 200;
+const int NUM_STARS = 5;
+const int RADIUS = 20;
 
 int main( int argc, char* argv[] )
 {
@@ -29,9 +29,9 @@ int main( int argc, char* argv[] )
   int WINDOW_GAP = 50;
   SDL_DisplayMode DM;
   SDL_GetCurrentDisplayMode(0, &DM);
-  auto SCREEN_WIDTH = DM.w;
   auto SCREEN_HEIGHT = DM.h-WINDOW_GAP;
-  auto DIAGONAL = sqrt(SCREEN_WIDTH*SCREEN_WIDTH + SCREEN_HEIGHT*SCREEN_HEIGHT);
+  auto SCREEN_WIDTH = SCREEN_HEIGHT;
+  // auto SCREEN_WIDTH = DM.w;
 
     SDL_Window* window = SDL_CreateWindow(
         "Galaxy Modeller",
@@ -50,7 +50,7 @@ int main( int argc, char* argv[] )
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist_pos_x(width_middle-RADIUS, width_middle+RADIUS);
-  std::uniform_real_distribution<double> dist_vel(-5.0, 5.0);
+  std::uniform_real_distribution<double> dist_vel(-1000.0, 1000.0);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -68,13 +68,17 @@ int main( int argc, char* argv[] )
     ImGui_ImplSDLRenderer2_Init(renderer);
 
     // Our state
-    ImVec4 galaxy_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 galaxy_color = ImVec4(0.25f, 0.35f, 0.90f, 1.00f);
+    float gravity_strength = 100.f;
+    float max_speed = 200.f;
+    float theta = 0.5f;
+    int soft_power = 2;
+    bool show_velocity_vectors = false;
+    bool show_gravity_vectors = false;
 
     SDL_Event e; 
     bool quit = false; 
     double oldTime = SDL_GetTicks();
-
-
     
     Point* stars[NUM_STARS]; //need to free memory when resized and points move to child quadrants
     for(int i=0; i < NUM_STARS; i++) {
@@ -82,8 +86,8 @@ int main( int argc, char* argv[] )
       double y_variance = sqrt(RADIUS*RADIUS - (x-width_middle)*(x-width_middle));
       std::uniform_real_distribution<double> dist_pos_y(-y_variance+height_middle, y_variance+height_middle);
       double y = dist_pos_y(mt);
-      double vx = (300-x)/(abs(300-x))/sqrt(x*x + y*y)*5000;
-      double vy = (300-y)/(abs(300-y))/sqrt(x*x + y*y)*5000;
+      double vx = (RADIUS-x)/(abs(RADIUS-x))/sqrt(x*x + y*y)*5000;
+      double vy = (RADIUS-y)/(abs(RADIUS-y))/sqrt(x*x + y*y)*5000;
       stars[i] = new Point(x, y, vy, -vx, 0, 0);
   }
 
@@ -95,7 +99,7 @@ int main( int argc, char* argv[] )
         }
       } 
       // rebuild quadtree
-      QuadTree* root = new QuadTree(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, nullptr);
+      QuadTree* root = new QuadTree(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, nullptr, gravity_strength, max_speed, theta, soft_power);
       for (int i=0; i < NUM_STARS; i++) {
         root->insert(stars[i]);
       }
@@ -119,25 +123,30 @@ int main( int argc, char* argv[] )
         SDL_SetRenderDrawColor(renderer, p->r, p->g, p->b, 255);
         // SDL_SetRenderDrawColor(renderer, galaxy_color.x*255, galaxy_color.y*255, galaxy_color.z*255, galaxy_color.z*255);
         SDL_RenderDrawPoint(renderer, p->x, p->y);
-        // SDL_RenderDrawLine(renderer,
-        //                p->x, p->y, p->x + p->vx/5.0, p->y + p->vy/5.0);
+        if(show_velocity_vectors) {
+          SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+          SDL_RenderDrawLine(renderer, p->x, p->y, p->x + p->vx/5.0, p->y + p->vy/5.0);
+        }
+        if(show_gravity_vectors) {
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+        SDL_RenderDrawLine(renderer,
+                       p->x, p->y, p->x + p->ax, p->y + p->ay);
+        }
       }
       delete root;
       root = nullptr;
 
-      static float f = 0.0f;
       static int counter = 0;
 
-      ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-      ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-      ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+      ImGui::Begin("Settings");
+      ImGui::Text("Galaxy Modeller Parameters");
+      ImGui::SliderFloat("Gravity Strength", &gravity_strength, 0.0f, 10000.f);
+      ImGui::SliderFloat("Max Star Velocity", &max_speed, 0.0f, 10000.f);
+      ImGui::SliderFloat("Theta Threshold", &theta, 0.0f, 5.0f);
+      ImGui::SliderInt("Softening Power", &soft_power, -5, 5);
       ImGui::ColorEdit3("Galaxy Color", (float*)&galaxy_color); // Edit 3 floats representing a color
-
-      if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-          counter++;
-      ImGui::SameLine();
-      ImGui::Text("counter = %d", counter);
+      ImGui::Checkbox("Show Velocity Vectors", &show_velocity_vectors);
+      ImGui::Checkbox("Show Gravity Vectors", &show_gravity_vectors);
 
       ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
       ImGui::End();

@@ -25,7 +25,4 @@ void Point::update_star_color(double root_center_mass_x, double root_center_mass
   r = (galaxy_r + convert_ranges(residual_dist_from_center_mass, 0, max_distance, 0, residual_r))*255;
   g = (galaxy_g + convert_ranges(residual_dist_from_center_mass, 0, max_distance, 0, residual_g))*255;
   b = (galaxy_b + convert_ranges(residual_dist_from_center_mass, 0, max_distance, 0, residual_b))*255;
-  // r = galaxy_r*255;
-  // g = galaxy_g*255;
-  // b = galaxy_b*255;
 }

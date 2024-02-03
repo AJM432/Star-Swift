@@ -7,4 +7,4 @@ LIB_DIRS = -L lib -l SDL2-2.0.0
 SRC = $(wildcard src/*.cpp) $(wildcard imgui/*.cpp)
 
 default:
-	g++ -std=c++11 $(SRC) -o main $(INCLUDE_DIRS) $(LIB_DIRS)
+	g++ -g -std=c++11 $(SRC) -o main $(INCLUDE_DIRS) $(LIB_DIRS)
