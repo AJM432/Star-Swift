@@ -1,13 +1,8 @@
 #include "QuadTree.hpp"
-#include <cmath>
 #include <algorithm>
 #include <iostream>
-
-double distance(double x0, double y0, double x1, double y1) {
-  return sqrt(pow(x1-x0, 2) + pow(y1-y0, 2));
-}
-
-
+#include "helper.h"
+#include <cmath>
 
 QuadTree::QuadTree(double x0, double y0, double x1, double y1, QuadTree *upper) {
   this->x0 = x0;
@@ -28,7 +23,7 @@ QuadTree::QuadTree(double x0, double y0, double x1, double y1, QuadTree *upper) 
   // tunable
   // ========
   softening_factor = 1e2;
-  theta_threshold = 0.5;
+  theta_threshold = 0;
   point_mass = 100;
   max_speed = 10000.0;
   // ========
@@ -58,24 +53,28 @@ QuadTree::~QuadTree() {
     delete bottom_right;
 }
 
-void QuadTree::update_star_color(Point *p) {
-  float v = (p->vx*p->vy)/(max_speed*max_speed);
-  float r = 0.f, g = 0.f, b = 0.f;
-  if (v < 0) {
-      p->b = 1.f + v;
-      p->g = -v;
-  }
-  else {
-      p->r = v;
-      p->g = 1.f - v;
-  }
-  // p->r = p->r*255;
-  p->r = 255;
-  p->g = p->g*255;
-  // p->g = 255;
-  p->b = 255;
-  // p->b = p->b*255;
-}
+//TODO: remove this
+// void QuadTree::update_star_color(Point *p) {
+//   p->r = 100;
+//   p->g = 100;
+//   p->b = 100;
+//   // float v = (p->vx*p->vy)/(max_speed*max_speed);
+//   // float r = 0.f, g = 0.f, b = 0.f;
+//   // if (v < 0) {
+//   //     p->b = 1.f + v;
+//   //     p->g = -v;
+//   // }
+//   // else {
+//   //     p->r = v;
+//   //     p->g = 1.f - v;
+//   // }
+//   // // p->r = p->r*255;
+//   // p->r = 255;
+//   // p->g = p->g*255;
+//   // // p->g = 255;
+//   // p->b = 255;
+//   // // p->b = p->b*255;
+// }
 
 void QuadTree::calculate_motion(Point *p, double other_x, double other_y, double mass, double dt) {
 
@@ -112,7 +111,7 @@ void QuadTree::calculate_motion(Point *p, double other_x, double other_y, double
     if (p->y < 10 || p->y > (SCREEN_HEIGHT - 10)) {
         p->vy = -p->vy;
     }
-    update_star_color(p);
+    // update_star_color(p);
 
 }
 
@@ -137,7 +136,6 @@ void QuadTree::update_point_gravity(Point *p, double dt) {
   }
 
   }
-
 }
 
 void QuadTree::update_galaxy(QuadTree *root, double dt) {
@@ -218,9 +216,9 @@ bool QuadTree::insert(Point *p) {
       distance_x_sum -= star->x;
       distance_y_sum -= star->y;
 
-      num_stars--;
-      distance_x_sum -= p->x;
-      distance_y_sum -= p->y;
+      // num_stars--;
+      // distance_x_sum -= p->x;
+      // distance_y_sum -= p->y;
 
       center_of_mass_x = distance_x_sum/(num_stars);
       center_of_mass_y = distance_y_sum/(num_stars);

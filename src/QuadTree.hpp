@@ -3,7 +3,7 @@
 
 class QuadTree{
 
-private:
+public:
   int max_size; //size of points array
   double center_of_mass_x;
   double center_of_mass_y;
@@ -38,7 +38,7 @@ public:
   QuadTree(double x0, double y0, double x1, double y1, QuadTree *upper);
   ~QuadTree();
   bool insert(Point *p);
-  void update_star_color(Point *p);
+  // void update_star_color(Point *p);
   void update_galaxy(QuadTree *root, double dt);
   void update_point_gravity(Point *p, double dt);
   void calculate_motion(Point *p, double other_x, double other_y, double mass, double dt);

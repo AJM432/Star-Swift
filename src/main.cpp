@@ -6,11 +6,10 @@
 
 #include <stdio.h>
 #include <random>
+#include <cmath>
 
 #include "QuadTree.hpp"
 
-// const int SCREEN_WIDTH = 600;
-// const int SCREEN_HEIGHT = 600;
 const int NUM_STARS = 5000;
 const int RADIUS = 200;
 
@@ -32,6 +31,7 @@ int main( int argc, char* argv[] )
   SDL_GetCurrentDisplayMode(0, &DM);
   auto SCREEN_WIDTH = DM.w;
   auto SCREEN_HEIGHT = DM.h-WINDOW_GAP;
+  auto DIAGONAL = sqrt(SCREEN_WIDTH*SCREEN_WIDTH + SCREEN_HEIGHT*SCREEN_HEIGHT);
 
     SDL_Window* window = SDL_CreateWindow(
         "Galaxy Modeller",
@@ -68,7 +68,7 @@ int main( int argc, char* argv[] )
     ImGui_ImplSDLRenderer2_Init(renderer);
 
     // Our state
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 galaxy_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     SDL_Event e; 
     bool quit = false; 
@@ -115,8 +115,9 @@ int main( int argc, char* argv[] )
 
       for (int i=0; i < NUM_STARS; i++) {
         Point *p = stars[i];
-        // SDL_SetRenderDrawColor(renderer, p->r, p->g, p->b, 255);
-        SDL_SetRenderDrawColor(renderer, clear_color.x*255, clear_color.y*255, clear_color.z*255, clear_color.z*255);
+        p->update_star_color(root->center_of_mass_x, root->center_of_mass_y, RADIUS, galaxy_color.x, galaxy_color.y, galaxy_color.z);
+        SDL_SetRenderDrawColor(renderer, p->r, p->g, p->b, 255);
+        // SDL_SetRenderDrawColor(renderer, galaxy_color.x*255, galaxy_color.y*255, galaxy_color.z*255, galaxy_color.z*255);
         SDL_RenderDrawPoint(renderer, p->x, p->y);
         // SDL_RenderDrawLine(renderer,
         //                p->x, p->y, p->x + p->vx/5.0, p->y + p->vy/5.0);
@@ -124,27 +125,27 @@ int main( int argc, char* argv[] )
       delete root;
       root = nullptr;
 
-            static float f = 0.0f;
-            static int counter = 0;
+      static float f = 0.0f;
+      static int counter = 0;
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+      ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+      ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+      ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+      ImGui::ColorEdit3("Galaxy Color", (float*)&galaxy_color); // Edit 3 floats representing a color
 
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
+      if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+          counter++;
+      ImGui::SameLine();
+      ImGui::Text("counter = %d", counter);
 
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-            ImGui::End();
+      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+      ImGui::End();
 
-        // Rendering
+    // Rendering
         ImGui::Render();
         SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-        SDL_SetRenderDrawColor(renderer, (Uint8)(clear_color.x * 255), (Uint8)(clear_color.y * 255), (Uint8)(clear_color.z * 255), (Uint8)(clear_color.w * 255));
+        SDL_SetRenderDrawColor(renderer, (Uint8)(galaxy_color.x * 255), (Uint8)(galaxy_color.y * 255), (Uint8)(galaxy_color.z * 255), (Uint8)(galaxy_color.w * 255));
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 
       SDL_RenderPresent(renderer);
