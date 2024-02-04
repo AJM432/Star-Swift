@@ -10,6 +10,7 @@
 #include <cmath>
 
 #include "QuadTree.hpp"
+#include "helper.h"
 
 const int NUM_STARS = 5000;
 const int RADIUS = 200;
@@ -63,7 +64,6 @@ int main( int argc, char* argv[] )
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
@@ -72,8 +72,8 @@ int main( int argc, char* argv[] )
     // State Variables
     ImVec4 galaxy_color = ImVec4(0.25f, 0.35f, 0.90f, 1.00f);
     float gravity_strength = 100.f; // also the point mass
-    float max_speed = 200.f;
-    float theta = 1.0f;
+    float max_speed = 10000.f;
+    float theta = 1.5f;
     int soft_power = 2;
     bool show_velocity_vectors = false;
     bool show_gravity_vectors = false;
@@ -81,10 +81,14 @@ int main( int argc, char* argv[] )
     double total_gravitational_potential_energy = 0;
     const int plot_size = 1001;
     static float kinetic_energies[plot_size];
+    static float gravitational_energies[plot_size];
     static float xs1[plot_size];
     for (int i = 0; i < plot_size; ++i) {
         xs1[i] = i * 1.0f;
     }
+    enum ColorMode { Color_Solid, Color_Radial, Color_Velocity, Color_COUNT };
+    static int color_mode = Color_Radial;
+    const char* color_mode_names[Color_COUNT] = {"Radial", "Solid", "Velocity"};
 
     SDL_Event e; 
     bool quit = false; 
@@ -132,13 +136,12 @@ int main( int argc, char* argv[] )
       total_kinetic_energy = 0;
       for (int i=0; i < NUM_STARS; i++) {
         Point *p = stars[i];
-        total_kinetic_energy += (1.0/2.0)*gravity_strength*(p->vx)*(p->vx); // 1/2mv^2
-        total_gravitational_potential_energy += (1.0/2.0)*gravity_strength*(p->vx)*(p->vx); // 1/2mv^2
+        total_kinetic_energy += gravity_strength*distance(p->x, p->y, p->x+p->vx, p->y+p->vy); // 1/2mv^2
+        total_gravitational_potential_energy -= gravity_strength*distance(p->x, p->y, p->x+p->ax, p->y+p->ay);
 
 
-        p->update_star_color(root->center_of_mass_x, root->center_of_mass_y, RADIUS, galaxy_color.x, galaxy_color.y, galaxy_color.z);
+        p->update_star_color(root->center_of_mass_x, root->center_of_mass_y, RADIUS, max_speed, galaxy_color.x, galaxy_color.y, galaxy_color.z, color_mode);
         SDL_SetRenderDrawColor(renderer, p->r, p->g, p->b, 255);
-        // SDL_SetRenderDrawColor(renderer, galaxy_color.x*255, galaxy_color.y*255, galaxy_color.z*255, galaxy_color.z*255);
         SDL_RenderDrawPoint(renderer, p->x, p->y);
         if(show_velocity_vectors) {
           SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -161,31 +164,46 @@ int main( int argc, char* argv[] )
 
       ImGui::Begin("Galaxy Settings", &p_open, window_flags);
       ImGui::SeparatorText("General");
+      if (ImGui::Button("Reset Galaxy", ImVec2(ImGui::GetWindowSize().x*1.0f, 0.0f))) {
+        // for (int i=0; i < NUM_STARS; i++) {
+        //   delete stars[i];
+        // }
+        // Point* stars[NUM_STARS]; //need to free memory when resized and points move to child quadrants
+        for(int i=0; i < NUM_STARS; i++) {
+          double x = dist_pos_x(mt);
+          double y_variance = sqrt(RADIUS*RADIUS - (x-width_middle)*(x-width_middle));
+          std::uniform_real_distribution<double> dist_pos_y(-y_variance+height_middle, y_variance+height_middle);
+          double y = dist_pos_y(mt);
+          double vx = (RADIUS-x)/(abs(RADIUS-x))/sqrt(x*x + y*y)*5000;
+          double vy = (RADIUS-y)/(abs(RADIUS-y))/sqrt(x*x + y*y)*5000;
+          *stars[i] = Point(x, y, vy, -vx, 0, 0);
+    }
+
+      }
       ImGui::SliderFloat("Gravitational Strength", &gravity_strength, 0.0f, 10000.f);
       ImGui::SliderFloat("Max Star Velocity", &max_speed, 0.0f, 10000.f);
       ImGui::SliderFloat("Theta Threshold", &theta, 0.0f, 5.0f);
       ImGui::SliderInt("Collision Softening", &soft_power, -5, 5);
       ImGui::ColorEdit3("Galaxy Color", (float*)&galaxy_color); // Edit 3 floats representing a color
+      const char* get_color_mode = (color_mode >= 0 && color_mode < Color_COUNT) ? color_mode_names[color_mode] : "Unknown";
+      ImGui::SliderInt("Color Modes", &color_mode, 0, Color_COUNT - 1, get_color_mode); // Use ImGuiSliderFlags_NoInp
+
       ImGui::SeparatorText("Vector Display");
       ImGui::Checkbox("Show Velocity Vectors", &show_velocity_vectors);
       ImGui::Checkbox("Show Gravity Vectors", &show_gravity_vectors);
       ImGui::SeparatorText("Stats");
 
     
-    ////// create plot
-    // static double xs2[20], ys2[20];
-    // for (int i = 0; i < 20; ++i) {
-    //     xs2[i] = i * 1/19.0f;
-    //     ys2[i] = xs2[i] * xs2[i];
-    // }
     for (int i = 1; i < plot_size; ++i) {
         kinetic_energies[i-1] = kinetic_energies[i];
+        gravitational_energies[i-1] = gravitational_energies[i];
     }
     kinetic_energies[plot_size-1] = total_kinetic_energy;
+    gravitational_energies[plot_size-1] = total_gravitational_potential_energy;
     if (ImPlot::BeginPlot("System Energy")) {
         ImPlot::SetupAxes("time(ms)","Energy(J)");
         ImPlot::PlotLine("Kinetic Energy", xs1, kinetic_energies, plot_size);
-        // ImPlot::PlotLine("Gravitational Potential Energy", xs2, ys2, 20);
+        ImPlot::PlotLine("Gravitational Potential Energy", xs1, gravitational_energies, plot_size);
         ImPlot::EndPlot();
     }
       ////////////

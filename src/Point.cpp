@@ -16,7 +16,9 @@ Point::Point(double x, double y, double vx, double vy, double ax, double ay){
   this->b = 255;
 }
 
-void Point::update_star_color(double root_center_mass_x, double root_center_mass_y, double max_distance, double galaxy_r, double galaxy_g, double galaxy_b) {
+void Point::update_star_color(double root_center_mass_x, double root_center_mass_y, double max_distance, double max_speed, double galaxy_r, double galaxy_g, double galaxy_b, int color_mode) {
+  if(color_mode == 0) {
+
   double residual_dist_from_center_mass = max_distance - distance(x, y, root_center_mass_x, root_center_mass_y);
   double residual_r = 1-galaxy_r;
   double residual_g = 1-galaxy_g;
@@ -25,4 +27,20 @@ void Point::update_star_color(double root_center_mass_x, double root_center_mass
   r = (galaxy_r + convert_ranges(residual_dist_from_center_mass, 0, max_distance, 0, residual_r))*255;
   g = (galaxy_g + convert_ranges(residual_dist_from_center_mass, 0, max_distance, 0, residual_g))*255;
   b = (galaxy_b + convert_ranges(residual_dist_from_center_mass, 0, max_distance, 0, residual_b))*255;
+  }
+  else if(color_mode == 1) {
+    r = galaxy_r*255;
+    g = galaxy_g*255;
+    b = galaxy_b*255;
+  }
+  else if(color_mode == 2) {
+    double residual_speed = max_speed - distance(x, y, x+vx, x+vy);
+    double residual_r = 1-galaxy_r;
+    double residual_g = 1-galaxy_g;
+    double residual_b = 1-galaxy_b;
+
+    r = (galaxy_r + convert_ranges(residual_speed, 0, max_speed, 0, residual_r))*255;
+    g = (galaxy_g + convert_ranges(residual_speed, 0, max_speed, 0, residual_g))*255;
+    b = (galaxy_b + convert_ranges(residual_speed, 0, max_speed, 0, residual_b))*255;
+    }
 }
