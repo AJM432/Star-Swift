@@ -13,7 +13,7 @@
 #include "helper.h"
 
 const int NUM_STARS = 5000;
-const int RADIUS = 200;
+const int RADIUS = 300;
 
 int main( int argc, char* argv[] )
 {
@@ -89,6 +89,7 @@ int main( int argc, char* argv[] )
     enum ColorMode { Color_Solid, Color_Radial, Color_Velocity, Color_COUNT };
     static int color_mode = Color_Radial;
     const char* color_mode_names[Color_COUNT] = {"Radial", "Solid", "Velocity"};
+    bool update = true;
 
     SDL_Event e; 
     bool quit = false; 
@@ -100,8 +101,10 @@ int main( int argc, char* argv[] )
       double y_variance = sqrt(RADIUS*RADIUS - (x-width_middle)*(x-width_middle));
       std::uniform_real_distribution<double> dist_pos_y(-y_variance+height_middle, y_variance+height_middle);
       double y = dist_pos_y(mt);
-      double vx = (RADIUS-x)/(abs(RADIUS-x))/sqrt(x*x + y*y)*5000;
-      double vy = (RADIUS-y)/(abs(RADIUS-y))/sqrt(x*x + y*y)*5000;
+      double central_x = x-SCREEN_WIDTH/2.0;
+      double central_y = y-SCREEN_HEIGHT/2.0;
+      double vx = central_x;
+      double vy = central_y;
       stars[i] = new Point(x, y, vy, -vx, 0, 0);
   }
 
@@ -129,7 +132,9 @@ int main( int argc, char* argv[] )
       SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
       SDL_RenderClear(renderer);
 
-      root->update_galaxy(root, deltaTime);
+      if(update) {
+        root->update_galaxy(root, deltaTime);
+      }
 
       // reset state variables
       total_gravitational_potential_energy = 0;
@@ -164,11 +169,10 @@ int main( int argc, char* argv[] )
 
       ImGui::Begin("Galaxy Settings", &p_open, window_flags);
       ImGui::SeparatorText("General");
+      if(ImGui::Button("Pause/Start", ImVec2(ImGui::GetWindowSize().x*1.0f, 0.0f))){
+        update = !update;
+        }
       if (ImGui::Button("Reset Galaxy", ImVec2(ImGui::GetWindowSize().x*1.0f, 0.0f))) {
-        // for (int i=0; i < NUM_STARS; i++) {
-        //   delete stars[i];
-        // }
-        // Point* stars[NUM_STARS]; //need to free memory when resized and points move to child quadrants
         for(int i=0; i < NUM_STARS; i++) {
           double x = dist_pos_x(mt);
           double y_variance = sqrt(RADIUS*RADIUS - (x-width_middle)*(x-width_middle));
