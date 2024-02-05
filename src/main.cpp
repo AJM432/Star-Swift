@@ -12,8 +12,9 @@
 #include "QuadTree.hpp"
 #include "helper.h"
 
+// Determine galaxy size and shape
 const int NUM_STARS = 5000;
-const int RADIUS = 300;
+const int RADIUS = 100;
 
 int main( int argc, char* argv[] )
 {
@@ -70,10 +71,10 @@ int main( int argc, char* argv[] )
     ImGui_ImplSDLRenderer2_Init(renderer);
 
     // State Variables
-    ImVec4 galaxy_color = ImVec4(0.25f, 0.35f, 0.90f, 1.00f);
-    float gravity_strength = 100.f; // also the point mass
-    float max_speed = 10000.f;
-    float theta = 1.5f;
+    ImVec4 galaxy_color = ImVec4(0.0f, 0.40f, 1.0f, 1.00f);
+    float gravity_strength = 200.f; // also the point mass
+    float max_speed = 100.0f;
+    float theta = 1.7f;
     int soft_power = 2;
     bool show_velocity_vectors = false;
     bool show_gravity_vectors = false;
@@ -87,7 +88,7 @@ int main( int argc, char* argv[] )
         xs1[i] = i * 1.0f;
     }
     enum ColorMode { Color_Solid, Color_Radial, Color_Velocity, Color_COUNT };
-    static int color_mode = Color_Radial;
+    static int color_mode = 0;
     const char* color_mode_names[Color_COUNT] = {"Radial", "Solid", "Velocity"};
     bool update = true;
 
@@ -98,13 +99,14 @@ int main( int argc, char* argv[] )
     Point* stars[NUM_STARS]; //need to free memory when resized and points move to child quadrants
     for(int i=0; i < NUM_STARS; i++) {
       double x = dist_pos_x(mt);
+      // Determines shape of the galaxy, currently a perfect circle
       double y_variance = sqrt(RADIUS*RADIUS - (x-width_middle)*(x-width_middle));
       std::uniform_real_distribution<double> dist_pos_y(-y_variance+height_middle, y_variance+height_middle);
       double y = dist_pos_y(mt);
       double central_x = x-SCREEN_WIDTH/2.0;
       double central_y = y-SCREEN_HEIGHT/2.0;
-      double vx = central_x;
-      double vy = central_y;
+      double vx = (RADIUS-x)/(abs(RADIUS-x))/sqrt(x*x + y*y)*10;
+      double vy = (RADIUS-y)/(abs(RADIUS-y))/sqrt(x*x + y*y)*10;
       stars[i] = new Point(x, y, vy, -vx, 0, 0);
   }
 
@@ -178,14 +180,14 @@ int main( int argc, char* argv[] )
           double y_variance = sqrt(RADIUS*RADIUS - (x-width_middle)*(x-width_middle));
           std::uniform_real_distribution<double> dist_pos_y(-y_variance+height_middle, y_variance+height_middle);
           double y = dist_pos_y(mt);
-          double vx = (RADIUS-x)/(abs(RADIUS-x))/sqrt(x*x + y*y)*5000;
-          double vy = (RADIUS-y)/(abs(RADIUS-y))/sqrt(x*x + y*y)*5000;
+          double vx = (RADIUS-x)/(abs(RADIUS-x))/sqrt(x*x + y*y)*10;
+          double vy = (RADIUS-y)/(abs(RADIUS-y))/sqrt(x*x + y*y)*10;
           *stars[i] = Point(x, y, vy, -vx, 0, 0);
     }
 
       }
-      ImGui::SliderFloat("Gravitational Strength", &gravity_strength, 0.0f, 10000.f);
-      ImGui::SliderFloat("Max Star Velocity", &max_speed, 0.0f, 10000.f);
+      ImGui::SliderFloat("Gravitational Strength", &gravity_strength, 0.0f, 1000.f);
+      ImGui::SliderFloat("Max Star Velocity", &max_speed, 0.0f, 1000.f);
       ImGui::SliderFloat("Theta Threshold", &theta, 0.0f, 5.0f);
       ImGui::SliderInt("Collision Softening", &soft_power, -5, 5);
       ImGui::ColorEdit3("Galaxy Color", (float*)&galaxy_color); // Edit 3 floats representing a color

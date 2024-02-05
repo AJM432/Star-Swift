@@ -1,5 +1,4 @@
-
-![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
+![Logo](https://github.com/AJM432/AJM432.github.io/assets/49791407/6db8ea27-6acb-4613-898f-41b80ef10c0a)
 
 
 # StarSwift: High-Performance Barnes-Hut Stellar Simulation
@@ -12,103 +11,78 @@ Effortlessly navigate the cosmos with StarSwift's high-performance Barnes-Hut al
 ![](https://img.shields.io/github/repo-size/AJM432/Solar-Synesthesia
 )
 ## Demo
-
-Insert gif or link to demo
-
-
+![](https://github.com/AJM432/Solar-System-Simulator/assets/49791407/3852c4c3-14ae-4cd8-9c43-337554d73774)
 ## Features
 
-- Light/dark mode toggle
-- Live previews
+- View stellar dynamics in real-time
+- Tunable system parameters for experimentation
+- View system variables such as velocity and acceleration in real-time
+- View kinetic energy graph during system evolution
 - Fullscreen mode
-- Cross platform
-
-
-## Screenshots
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
-
 
 ## Usage/Examples
-
-```javascript
-import Component from 'my-project'
-
-function App() {
-  return <Component />
-}
+Manually change starting parameters to observe different initial galaxy configurations.
+```cpp
+// Determine galaxy size and shape
+const int NUM_STARS = 5000;
+const int RADIUS = 300;
+...
+// Determines shape of the galaxy, currently a perfect circle
+std::uniform_real_distribution<double> dist_pos_y(-y_variance+height_middle, y_variance+height_middle);
 ```
 
 
 ## Run Locally
+`Ensure you have g++ and make installed`
 
 Clone the project
 
 ```bash
-  git clone https://link-to-project
+  git clone https://github.com/AJM432/Star-Swift.github.io.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd my-project
+  cd Star-Swift
 ```
 
-Install dependencies
+Build the project
 
 ```bash
-  npm install
+  make
 ```
 
-Start the server
+Run StarSwift
 
 ```bash
-  npm run start
+  ./StarSwift
 ```
-
-
-## Optimizations
-
-What optimizations did you make in your code? E.g. refactors, performance improvements, accessibility
 
 
 ## Tech Stack
+**Graphics and Window Handling**: SDL2 (Simple DirectMedia Layer)
 
-**Client:** React, Redux, TailwindCSS
+**GUI Framework**: ImGui (Immediate mode GUI library for C++)
 
-**Server:** Node, Express
+**Plotting**: ImPlot (Extension for ImGui for real-time plotting)
 
-
-## FAQ
-
-#### Question 1
-
-Answer 1
-
-#### Question 2
-
-Answer 2
-
-
+**Programming Language**: C++
 ## Feedback
 
-If you have any feedback, please reach out to us at fake@fake.com
-
-
+If you have any feedback, please reach out to me at alvinjosematthew@gmail.com
 ## Acknowledgements
-
- - [Awesome Readme Templates](https://awesomeopensource.com/project/elangosundar/awesome-README-templates)
- - [Awesome README](https://github.com/matiassingers/awesome-readme)
- - [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
+Here are some excellent articles describing how the barnes-hut algorithm works!
+ - [The Barnes-Hut Algorithm: Tom Ventimiglia & Kevin Wayne](http://arborjs.org/docs/barnes-hut)
+ - [The Barnes-Hut Approximation: Efficient computation of N-body forces By Jeffrey Heer](https://jheer.github.io/barnes-hut/)
 
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
-
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ## 🔗 Links
-[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://katherineoelsner.com/)
-[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/)
-[![twitter](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/)
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://alvinmatthew.me/)
 
+[![SolarSynesthesia](https://img.shields.io/badge/Solar-Synesthesia-20B2AA?style=for-the-badge)](https://github.com/AJM432/Solar-Synesthesia)
+
+[![SolarSynesthesia](https://img.shields.io/badge/Solar%20System-Simulator-20B2AA?style=for-the-badge)](https://github.com/AJM432/Solar-System-Simulator)
