@@ -8,7 +8,6 @@ Effortlessly navigate the cosmos with StarSwift's high-performance Barnes-Hut al
 
 ![](https://img.shields.io/badge/C++-00599C?style=plastic&logo=C%2B%2B&logoColor=white)
 
-![](https://img.shields.io/github/repo-size/AJM432/Star-Swift)
 ## Demo
 ![](https://github.com/AJM432/Solar-System-Simulator/assets/49791407/3852c4c3-14ae-4cd8-9c43-337554d73774)
 ## Features
