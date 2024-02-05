@@ -3,7 +3,7 @@
 
 # StarSwift: High-Performance Barnes-Hut Stellar Simulation
 
-Effortlessly navigate the cosmos with StarSwift's high-performance Barnes-Hut algorithm. Enhanced with quadtrees and recursive gravity calculations, this streamlined engine accurately models thousands of stars, guaranteeing an optimized celestial experience.
+Navigate the cosmos with this high-performance Barnes-Hut simulation. Accurately models thousands of stars forming a galaxy, guaranteeing an optimized celestial experience.
 
 
 ![](https://img.shields.io/badge/C++-00599C?style=plastic&logo=C%2B%2B&logoColor=white)
