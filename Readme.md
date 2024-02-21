@@ -12,7 +12,10 @@ Navigate the cosmos with this high-performance Barnes-Hut simulation. Accurately
 ![](https://github.com/AJM432/Solar-System-Simulator/assets/49791407/3852c4c3-14ae-4cd8-9c43-337554d73774)
 
 ## System Parameters
-![](https://github.com/AJM432/Star-Swift/assets/49791407/d1494e0a-d3f8-4caa-b7ed-201b5dae4e5b)
+<p align="center">
+<img src='https://github.com/AJM432/Star-Swift/assets/49791407/d1494e0a-d3f8-4caa-b7ed-201b5dae4e5b' width='500'>
+</p>
+
 ### General
 - `Pause/Start`
 	- This button allows users to toggle the simulation update cycle to allow them to view a particular system state.
