@@ -30,7 +30,7 @@ https://github.com/AJM432/Star-Swift/assets/49791407/d7a6447f-662e-40e2-b7d3-413
 	- Determines the maximum velocity a star can travel preventing the system from becoming unstable due to large gravitational forces. Also allows users to reset the system state without needing to reset the entire program.
 
 - `Theta Threshold`
-	- This parameter is the core of the Barnes-hut algorithm. Theta determines the accuracy of the simulation. Setting $\theta = 0$ reduces the simulation to a naive n-body simulation of time complexity $O(n^2)$. Increasing this value gradually reduces the time complexity to $O(n)$ by sacrificing accuracy for speed. Increase this parameter to increase simulation speed.
+	- This parameter is the core of the Barnes-hut algorithm. Theta determines the accuracy of the simulation. Setting $\theta = 0$ reduces the simulation to a naive n-body simulation of time complexity $O(n^2)$. Increasing this value gradually reduces the time complexity to $O(n\log(n))$ by sacrificing accuracy for speed. Increase this parameter to increase simulation speed.
 
 - `Collision Softening`
 	- Dampens the force between two stars thereby reducing the chance that a star is launched outside the system. We calculate acceleration by $a_{star} = \frac{m_{star}}{r^2+d_{soft}}$ where $d_{soft}$ is the softening parameter. This helps prevent velocities from becoming infinite when stars get too close to one another.
