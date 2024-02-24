@@ -9,7 +9,7 @@ Navigate the cosmos with this high-performance Barnes-Hut simulation. Accurately
 ![](https://img.shields.io/badge/C++-00599C?style=plastic&logo=C%2B%2B&logoColor=white)
 
 ## Demo
-![](https://github.com/AJM432/Solar-System-Simulator/assets/49791407/3852c4c3-14ae-4cd8-9c43-337554d73774)
+https://github.com/AJM432/Star-Swift/assets/49791407/d7a6447f-662e-40e2-b7d3-4137854bb5e9
 
 ## System Parameters
 <p align="center">
