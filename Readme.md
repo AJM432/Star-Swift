@@ -125,7 +125,7 @@ Here are some excellent articles describing how the Barnes-Hut algorithm works!
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ## 🔗 Links
-[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://alvinmatthew.me/)
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://alvinmatthew.com/)
 
 [![SolarSynesthesia](https://img.shields.io/badge/Solar-Synesthesia-20B2AA?style=for-the-badge)](https://github.com/AJM432/Solar-Synesthesia)
 
