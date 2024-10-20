@@ -1,5 +1,4 @@
-![Logo](https://github.com/AJM432/AJM432.github.io/assets/49791407/6db8ea27-6acb-4613-898f-41b80ef10c0a)
-
+![Logo](https://github.com/user-attachments/assets/bdb5e7fc-cc6a-4c65-9a55-2b768a2ea816)
 
 # StarSwift: High-Performance Barnes-Hut Stellar Simulation
 
